@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesión: Nudos & Amarras</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --khaki: #C8A96E;
+    --khaki-light: #E8D5A3;
+    --forest: #2D5016;
+    --forest-mid: #3D6B1F;
+    --forest-light: #5A8A2E;
+    --bark: #6B4A1E;
+    --rope: #D4A854;
+    --cream: #F5EDD8;
+    --charcoal: #1A1A1A;
+    --smoke: #F0EAD6;
+    --red-accent: #C0392B;
+    --gold: #F0C040;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--charcoal);
+    color: var(--cream);
+    min-height: 100vh;
+  }
+
+  /* ── ROPE TEXTURE BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        rgba(200,169,110,0.04) 2px,
+        rgba(200,169,110,0.04) 4px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 0 24px 80px; position: relative; z-index: 1; }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 60px 0 40px;
+    position: relative;
+  }
+
+  .badge {
+    display: inline-block;
+    background: var(--forest);
+    border: 2px solid var(--khaki);
+    color: var(--khaki-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    padding: 6px 18px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 10vw, 96px);
+    line-height: 0.9;
+    color: var(--cream);
+    letter-spacing: 4px;
+  }
+
+  h1 span {
+    color: var(--rope);
+    display: block;
+  }
+
+  .meta-row {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(200,169,110,0.3);
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--khaki-light);
+  }
+
+  .meta-chip .icon { font-size: 16px; }
+
+  /* ── TIMELINE STRIP ── */
+  .timeline-strip {
+    display: flex;
+    gap: 0;
+    margin: 48px 0 60px;
+    border: 1px solid rgba(200,169,110,0.25);
+    overflow: hidden;
+  }
+
+  .tl-block {
+    flex: 1;
+    padding: 14px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-right: 1px solid rgba(200,169,110,0.2);
+    position: relative;
+  }
+
+  .tl-block:last-child { border-right: none; }
+
+  .tl-block:hover { background: rgba(200,169,110,0.1); }
+
+  .tl-block.active {
+    background: var(--forest);
+    border-bottom: 3px solid var(--rope);
+  }
+
+  .tl-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--rope);
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+
+  .tl-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--khaki-light);
+    letter-spacing: 0.5px;
+  }
+
+  /* ── SECTION CARDS ── */
+  .section-card {
+    margin-bottom: 40px;
+    border: 1px solid rgba(200,169,110,0.2);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .section-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+  }
+
+  .card-teoria::before { background: var(--khaki); }
+  .card-practica::before { background: var(--forest-light); }
+  .card-concurso::before { background: var(--red-accent); }
+  .card-cierre::before { background: var(--gold); }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 28px;
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid rgba(200,169,110,0.1);
+  }
+
+  .section-header:hover { background: rgba(255,255,255,0.06); }
+
+  .section-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    color: rgba(200,169,110,0.25);
+    min-width: 52px;
+  }
+
+  .section-info { flex: 1; }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .tag-teoria { color: var(--khaki); }
+  .tag-practica { color: var(--forest-light); }
+  .tag-concurso { color: var(--red-accent); }
+  .tag-cierre { color: var(--gold); }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 2px;
+    color: var(--cream);
+  }
+
+  .section-duration {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--rope);
+    text-align: right;
+  }
+
+  .section-body {
+    padding: 0 28px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s ease;
+  }
+
+  .section-body.open {
+    max-height: 2000px;
+    padding: 28px 28px 32px;
+  }
+
+  /* ── BLOCKS WITHIN SECTIONS ── */
+  .block {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(200,169,110,0.12);
+    padding: 20px 22px;
+    margin-bottom: 16px;
+  }
+
+  .block-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--khaki-light);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .block-title .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--rope);
+    flex-shrink: 0;
+  }
+
+  .block p, .block li {
+    font-size: 14px;
+    color: rgba(245,237,216,0.8);
+    line-height: 1.7;
+  }
+
+  .block ul, .block ol {
+    padding-left: 20px;
+    margin-top: 6px;
+  }
+
+  .block li { margin-bottom: 4px; }
+
+  .tip-box {
+    background: rgba(45,80,22,0.4);
+    border-left: 3px solid var(--forest-light);
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #A8D060;
+  }
+
+  .tip-box strong { color: #C8F080; }
+
+  .warn-box {
+    background: rgba(192,57,43,0.15);
+    border-left: 3px solid var(--red-accent);
+    padding: 12px 16px;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #F0A090;
+  }
+
+  /* ── KNOT GRID ── */
+  .knot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .knot-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(200,169,110,0.2);
+    padding: 14px 16px;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .knot-card:hover {
+    border-color: var(--rope);
+    background: rgba(200,169,110,0.08);
+  }
+
+  .knot-card.checked {
+    border-color: var(--forest-light);
+    background: rgba(90,138,46,0.12);
+  }
+
+  .knot-card.checked::after {
+    content: '✓';
+    position: absolute;
+    top: 8px; right: 10px;
+    color: var(--forest-light);
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  .knot-name {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+
+  .knot-use {
+    font-size: 11px;
+    color: rgba(245,237,216,0.55);
+    line-height: 1.5;
+  }
+
+  /* ── LASHING TABLE ── */
+  .lashing-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 12px;
+    font-size: 13px;
+  }
+
+  .lashing-table th {
+    background: var(--forest);
+    color: var(--khaki-light);
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--rope);
+  }
+
+  .lashing-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(200,169,110,0.1);
+    color: rgba(245,237,216,0.8);
+    vertical-align: top;
+  }
+
+  .lashing-table tr:nth-child(even) td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  /* ── COMPETITION ── */
+  .competition-rounds {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 600px) { .competition-rounds { grid-template-columns: 1fr; } }
+
+  .round-card {
+    background: rgba(192,57,43,0.08);
+    border: 1px solid rgba(192,57,43,0.3);
+    padding: 16px;
+  }
+
+  .round-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--red-accent);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .round-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .round-desc {
+    font-size: 12px;
+    color: rgba(245,237,216,0.65);
+    line-height: 1.6;
+  }
+
+  .points-badge {
+    display: inline-block;
+    background: var(--red-accent);
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    margin-top: 8px;
+  }
+
+  /* ── TIMER WIDGET ── */
+  .timer-widget {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(200,169,110,0.3);
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .timer-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 6px;
+    color: var(--rope);
+    line-height: 1;
+    margin: 8px 0;
+    transition: color 0.3s;
+  }
+
+  .timer-display.danger { color: var(--red-accent); animation: pulse 0.5s ease infinite alternate; }
+
+  @keyframes pulse { from { opacity: 1; } to { opacity: 0.6; } }
+
+  .timer-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--khaki);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .timer-presets {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .preset-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(200,169,110,0.3);
+    color: var(--khaki-light);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .preset-btn:hover, .preset-btn.active-preset {
+    background: var(--forest);
+    border-color: var(--rope);
+    color: var(--cream);
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .ctrl-btn {
+    padding: 10px 28px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-start { background: var(--forest-light); color: white; }
+  .btn-start:hover { background: var(--forest-mid); }
+  .btn-pause { background: var(--bark); color: white; }
+  .btn-pause:hover { background: #5a3a10; }
+  .btn-reset { background: rgba(255,255,255,0.08); color: var(--khaki-light); border: 1px solid rgba(200,169,110,0.3); }
+  .btn-reset:hover { background: rgba(255,255,255,0.14); }
+
+  /* ── TEAMS ── */
+  .teams-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 12px;
+  }
+
+  .team-card {
+    border: 1px solid rgba(200,169,110,0.2);
+    padding: 16px 18px;
+  }
+
+  .team-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .team-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+  }
+
+  .team-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .score-btn {
+    display: inline-block;
+    width: 32px; height: 32px;
+    line-height: 30px;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(200,169,110,0.2);
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cream);
+    transition: background 0.15s;
+    user-select: none;
+  }
+
+  .score-btn:hover { background: rgba(200,169,110,0.2); }
+
+  .score-controls { display: flex; gap: 6px; align-items: center; }
+
+  /* ── CHECKLIST ── */
+  .checklist { margin-top: 12px; }
+
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(200,169,110,0.08);
+    cursor: pointer;
+  }
+
+  .check-item:last-child { border-bottom: none; }
+
+  .check-box {
+    width: 20px; height: 20px;
+    border: 2px solid rgba(200,169,110,0.4);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .check-item.done .check-box {
+    background: var(--forest-light);
+    border-color: var(--forest-light);
+    color: white;
+    font-size: 12px;
+  }
+
+  .check-text { font-size: 13px; color: rgba(245,237,216,0.8); line-height: 1.5; }
+  .check-item.done .check-text { text-decoration: line-through; color: rgba(245,237,216,0.4); }
+
+  /* ── FOOTER ── */
+  .session-footer {
+    text-align: center;
+    margin-top: 60px;
+    padding: 32px;
+    border: 1px solid rgba(200,169,110,0.15);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .footer-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 4px;
+    color: var(--khaki);
+    margin-bottom: 8px;
+  }
+
+  .footer-sub {
+    font-size: 12px;
+    color: rgba(245,237,216,0.4);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── ROPE DIVIDER ── */
+  .rope-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 32px 0;
+    color: rgba(200,169,110,0.3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+  }
+
+  .rope-divider::before, .rope-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,169,110,0.3), transparent);
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-bar {
+    height: 3px;
+    background: rgba(200,169,110,0.15);
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--forest-light), var(--rope));
+    transition: width 0.4s ease;
+  }
+
+  .chevron {
+    font-size: 12px;
+    color: var(--rope);
+    transition: transform 0.3s;
+    margin-left: auto;
+  }
+
+  .chevron.open { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="badge">🪢 Plan de Sesión · Escautismo</div>
+    <h1>NUDOS<span>& AMARRAS</span></h1>
+    <div class="meta-row">
+      <div class="meta-chip"><span class="icon">⏱</span> 1 hora 30 min</div>
+      <div class="meta-chip"><span class="icon">👥</span> 12–14 años</div>
+      <div class="meta-chip"><span class="icon">📍</span> Salón grande</div>
+      <div class="meta-chip"><span class="icon">👨‍🏫</span> 2 instructores</div>
+      <div class="meta-chip"><span class="icon">🏆</span> Concurso con insignia</div>
+    </div>
+  </header>
+
+  <!-- TIMELINE STRIP -->
+  <div class="timeline-strip" id="timeline">
+    <div class="tl-block active" onclick="highlightBlock(this, 0)">
+      <div class="tl-time">0:00</div>
+      <div class="tl-label">Arranque</div>
+    </div>
+    <div class="tl-block" onclick="highlightBlock(this, 1)">
+      <div class="tl-time">0:05</div>
+      <div class="tl-label">Teoría</div>
+    </div>
+    <div class="tl-block" onclick="highlightBlock(this, 2)">
+      <div class="tl-time">0:25</div>
+      <div class="tl-label">Nudos</div>
+    </div>
+    <div class="tl-block" onclick="highlightBlock(this, 3)">
+      <div class="tl-time">0:45</div>
+      <div class="tl-label">Amarras</div>
+    </div>
+    <div class="tl-block" onclick="highlightBlock(this, 4)">
+      <div class="tl-time">1:10</div>
+      <div class="tl-label">Concurso</div>
+    </div>
+    <div class="tl-block" onclick="highlightBlock(this, 5)">
+      <div class="tl-time">1:25</div>
+      <div class="tl-label">Cierre</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <!-- ============ BLOQUE 0: ARRANQUE ============ -->
+  <div class="section-card card-teoria" id="card-0">
+    <div class="section-header" onclick="toggleCard(0)">
+      <div class="section-num">00</div>
+      <div class="section-info">
+        <div class="section-tag tag-teoria">APERTURA</div>
+        <div class="section-title">ARRANQUE Y EQUIPOS</div>
+      </div>
+      <div class="section-duration">5 min</div>
+      <div class="chevron" id="chevron-0">▼</div>
+    </div>
+    <div class="section-body open" id="body-0">
+
+      <div class="block">
+        <div class="block-title"><div class="dot"></div>¿Cómo entran?</div>
+        <p>Al llegar, cada niño encuentra una cuerda en su silla. <strong>Reto inmediato escrito en el pizarrón:</strong> "Haz el nudo que más recuerdes. Tienes 3 minutos." — Esto activa a los que ya saben y rompe el hielo sin esperar a que lleguen todos.</p>
+      </div>
+
+      <div class="block">
+        <div class="block-title"><div class="dot"></div>Dividir en 2 equipos</div>
+        <p>Divide al grupo en 2 equipos de forma creativa: dobla una cuerda por la mitad y cada quien jala un extremo — los que sacan el mismo color van juntos.</p>
+        <ul>
+          <li><strong>Equipo Ballestrinque</strong> 🪢</li>
+          <li><strong>Equipo Bolina</strong> 🧭</li>
+        </ul>
+      </div>
+
+      <div class="block">
+        <div class="block-title"><div class="dot"></div>Regla del concurso (la explicas YA)</div>
+        <p>Todo lo que hacen desde este momento da puntos. Al final, el equipo ganador recibe la insignia. Ponles presión desde el minuto 1.</p>
+      </div>
+
+      <!-- SCOREBOARD -->
+      <div style="margin-top:16px;">
+        <div class="block-title" style="margin-bottom:12px;"><div class="dot"></div>Marcador en vivo</div>
+        <div class="teams-grid">
+          <div class="team-card" style="border-color: rgba(90,138,46,0.4);">
+            <div class="team-header">
+              <div class="team-name" style="color: var(--forest-light);">🪢 BALLESTRINQUE</div>
+              <div class="team-score" id="score-a">0</div>
+            </div>
+            <div class="score-controls">
+              <div class="score-btn" onclick="changeScore('a', 1)">+</div>
+              <div class="score-btn" onclick="changeScore('a', -1)">−</div>
+              <span style="font-size:11px;color:rgba(245,237,216,0.4);margin-left:6px;">pts</span>
+            </div>
+          </div>
+          <div class="team-card" style="border-color: rgba(192,57,43,0.4);">
+            <div class="team-header">
+              <div class="team-name" style="color: #E0826A;">🧭 BOLINA</div>
+              <div class="team-score" id="score-b">0</div>
+            </div>
+            <div class="score-controls">
+              <div class="score-btn" onclick="changeScore('b', 1)">+</div>
+              <div class="score-btn" onclick="changeScore('b', -1)">−</div>
+              <span style="font-size:11px;color:rgba(245,237,216,0.4);margin-left:6px;">pts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ BLOQUE 1: TEORÍA ============ -->
+  <div class="section-card card-teoria" id="card-1">
+    <div class="section-header" onclick="toggleCard(1)">
+      <div class="section-num">01</div>
+      <div class="section-info">
+        <div class="section-tag tag-teoria">TEORÍA RÁPIDA</div>
+        <div class="section-title">LO QUE DEBES SABER</div>
+      </div>
+      <div class="section-duration">20 min</div>
+      <div class="chevron" id="chevron-1">▼</div>
+    </div>
+    <div class="section-body" id="body-1">
+
+      <div class="tip-box" style="margin-bottom:16px;">
+        <strong>Regla de oro:</strong> Máximo 15 min hablando. Si superas ese tiempo, los pierdes. Usa preguntas para mantenerlos activos.
+      </div>
+
+      <div class="block">
+        <div class="block-title"><div class="dot"></div>Terminología esencial (5 min) — Formato: pregunta y respuesta</div>
+        <p>NO expliques todo. Pregunta primero, deja que ellos respondan y corrige solo lo esencial para mantener ritmo.</p>
+      </div>
+
+      <div class="warn-box">
+        Mantén esta sección dinámica: pregunta, demo corta y práctica inmediata.
+      </div>
+
+    </div>
+  </div>
+
+  <div class="session-footer">
+    <div class="footer-title">FIN DE SESIÓN</div>
+    <div class="footer-sub">Nudos y amarras listos para práctica en campo</div>
+  </div>
+
+</div>
+
+<script>
+  const scores = {
+    a: 0,
+    b: 0,
+  };
+
+  function updateScoreUI(team) {
+    const scoreEl = document.getElementById(`score-${team}`);
+    if (!scoreEl) {
+      return;
+    }
+    scoreEl.textContent = String(scores[team]);
+  }
+
+  function changeScore(team, delta) {
+    if (!(team in scores)) {
+      return;
+    }
+    scores[team] += delta;
+    if (scores[team] < 0) {
+      scores[team] = 0;
+    }
+    updateScoreUI(team);
+  }
+
+  function toggleCard(index) {
+    const body = document.getElementById(`body-${index}`);
+    const chevron = document.getElementById(`chevron-${index}`);
+    if (!body || !chevron) {
+      return;
+    }
+    body.classList.toggle('open');
+    chevron.classList.toggle('open');
+  }
+
+  function highlightBlock(clickedBlock, index) {
+    const blocks = document.querySelectorAll('.tl-block');
+    blocks.forEach((block) => block.classList.remove('active'));
+    clickedBlock.classList.add('active');
+
+    const cards = document.querySelectorAll('.section-card');
+    const targetCard = document.getElementById(`card-${index}`);
+    if (targetCard) {
+      cards.forEach((card) => {
+        if (card !== targetCard) {
+          card.style.opacity = '0.7';
+        }
+      });
+      targetCard.style.opacity = '1';
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) {
+      const maxSteps = Math.max(blocks.length - 1, 1);
+      const progress = Math.round((index / maxSteps) * 100);
+      progressFill.style.width = `${progress}%`;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateScoreUI('a');
+    updateScoreUI('b');
+  });
+</script>
+</body>
+</html>
